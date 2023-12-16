@@ -1,7 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Broadcast;
-use App\Models\User;
+use App\Models\Message;
+
+Broadcast::channel('chat.{roomId}', function (Message $message, $roomId) {
+    return $message->room_id === $roomId;
+});
+// Broadcast::channel('chat', function ($user) {
+//     return Auth::check();
+// });
+
+
 /*
 |--------------------------------------------------------------------------
 | Broadcast Channels
@@ -12,12 +21,3 @@ use App\Models\User;
 | used to check if an authenticated user can listen to the channel.
 |
 */
-
-
-Broadcast::channel('chat.{roomId}', function (User $user, $roomId) {
-    // return $user->id === $userId;
-    return $user->canJoinChatRoom($roomId);
-});
-// Broadcast::channel('chat', function ($user) {
-//     return Auth::check();
-// });

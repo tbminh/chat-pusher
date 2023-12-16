@@ -17,6 +17,7 @@ return new class extends Migration
             //insert the lines below
             $table->integer('user_id')->unsigned();
             $table->text('message');
+            $table->integer('room_id');
         });
     }
 
