@@ -17,7 +17,7 @@ export default {
         const currentUser = ref(null);
         const user = ref(null);
         const bottomElRef = ref(null);
-
+        const room_id = 1;
         const getCurrentUser = () => {
             axios
                 .get("/getCurrentUser")
@@ -41,7 +41,7 @@ export default {
         };
         const fetchMessages = () => {
             axios
-                .get("/messages")
+                .get(`/messages/${room_id}`)
                 .then((response) => {
                     const a = response.data.map((item, index) => ({
                         className:
@@ -94,7 +94,7 @@ export default {
             //             messages.value.push(newMessage);
             //         }
             //     });
-            Echo.channel("chat").listen("MessageSent", (e) => {
+            Echo.private("chat"+ room_id).listen("MessageSent", (e) => {
                 const { message, user, className } = e;
                 const newMessage = {
                     message: message.message,

@@ -24,9 +24,9 @@ class ChatsController extends Controller
         return view('chat');
     }
 
-    public function fetchMessages()
+    public function fetchMessages($room_id)
     {
-        return Message::with('user')->get();
+        return Message::with('user')->where('room_id',$room_id)->get();
     }
 
     public function sendMessage(Request $request)
