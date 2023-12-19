@@ -31,11 +31,12 @@ class MessageSent implements ShouldBroadcast
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn(): array
+    public function broadcastOn()//: array
     {
-        return [new PrivateChannel('chat.'.$this->message->room_id)];
-        // return [
-        //     'chat'
-        // ];
+        // return new PrivateChannel('chat.'.$this->message->room_id);
+        // return [new PrivateChannel('chat.'.$this->message->room_id)];
+        return [
+            'chat'
+        ];
     }
 }

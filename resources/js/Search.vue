@@ -68,7 +68,6 @@ export default {
                             ? "chat-message-right pb-3"
                             : "chat-message-left pb-3",
                     };
-                    console.log(newMessage);
                     messages.value.push(newMessage);
                 })
                 .catch((error) => {
@@ -79,34 +78,35 @@ export default {
             getCurrentUser();
             fetchList();
             fetchMessages();
-            // Echo.private('private-chat.' + currentUser.value)
-            //     .listen('.MessageSent', (event) => {
-            //         const { message, user, className } = event;
-            //         const newMessage = {
-            //             message: message.message,
-            //             user,
-            //             className:
-            //                 user.id === currentUser.value
-            //                     ? 'chat-message-right pb-3'
-            //                     : 'chat-message-left pb-3',
-            //         };
-            //         if (user.id !== currentUser.value) {
-            //             messages.value.push(newMessage);
-            //         }
-            //     });
-            Echo.private("chat"+ room_id).listen("MessageSent", (e) => {
-                const { message, user, className } = e;
-                const newMessage = {
-                    message: message.message,
-                    user,
-                    className:
-                        user.id == currentUser.value
-                            ? "chat-message-right pb-3"
-                            : "chat-message-left pb-3",
-                };
-                if (user.id != currentUser.value){
-                    messages.value.push(newMessage);
-                }
+            //  Echo.channel('private-chat.' + currentUser.value)
+            //      .listen('.MessageSent', (event) => {
+            //          const { message, user, className } = event;
+            //          const newMessage = {
+            //              message: message.message,
+            //              user,
+            //              className:
+            //                  user.id === currentUser.value
+            //                      ? 'chat-message-right pb-3'
+            //                      : 'chat-message-left pb-3',
+            //          };
+            //          if (user.id !== currentUser.value) {
+            //              messages.value.push(newMessage);
+            //          }
+            //      });
+            Echo.private(`chat.${room_id}`).listen("MessageSent", (e) => {
+               const { message, user, className } = e;
+               console.log(e);
+               const newMessage = {
+                   message: message.message,
+                   user,
+                   className:
+                       user.id == currentUser.value
+                           ? "chat-message-right pb-3"
+                           : "chat-message-left pb-3",
+               };
+               if (user.id != currentUser.value){
+                   messages.value.push(newMessage);
+               }
             });
         });
         return {

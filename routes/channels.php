@@ -6,9 +6,9 @@ use App\Models\Message;
 Broadcast::channel('chat.{roomId}', function (Message $message, $roomId) {
     return $message->room_id === $roomId;
 });
-// Broadcast::channel('chat', function ($user) {
-//     return Auth::check();
-// });
+Broadcast::channel('chat', function ($user) {
+    return Auth::check();
+});
 
 
 /*
