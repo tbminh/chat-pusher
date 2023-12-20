@@ -23,11 +23,13 @@ Route::get('/chat-zalo', [App\Http\Controllers\ChatsController::class, 'chat_zal
 
 Route::get('/getList', [App\Http\Controllers\ChatsController::class, 'get_list']);
 Route::get('/getCurrentUser', [App\Http\Controllers\ChatsController::class, 'get_current_user']);
+Route::get('/getReceiver/{receiver}', [App\Http\Controllers\ChatsController::class, 'get_receiver']);
 
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/chat', [App\Http\Controllers\ChatsController::class, 'index']);
-Route::get('/messages/{room_id}', [App\Http\Controllers\ChatsController::class, 'fetchMessages']);
+Route::get('/messages/{receiver}', [App\Http\Controllers\ChatsController::class, 'fetchMessages']);
 Route::post('/messages', [App\Http\Controllers\ChatsController::class, 'sendMessage']);
+Route::post('/chat/greet/{id}', [App\Http\Controllers\ChatsController::class, 'greetReceived'])->name('chat.greet');
 

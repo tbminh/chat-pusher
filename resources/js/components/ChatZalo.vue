@@ -2,9 +2,9 @@
     <div class="col-12 col-lg-7 col-xl-9">
         <div class="py-2 px-4 border-bottom d-none d-lg-block">
             <div class="d-flex align-items-center py-1">
-                <div class="position-relative">
+                <div class="position-relative" v-show="info.name !== undefined">
                     <img
-                        src="https://bootdey.com/img/Content/avatar/avatar3.png"
+                        :src="`/images/${info.avatar}`"
                         class="rounded-circle mr-1"
                         alt="Sharon Lessman"
                         width="40"
@@ -12,8 +12,8 @@
                     />
                 </div>
                 <div class="flex-grow-1 pl-3">
-                    <strong>Sharon Lessman</strong>
-                    <div class="text-muted small"><em>Typing...</em></div>
+                    <strong>&nbsp; {{ info.name }}</strong>
+                    <!-- <div class="text-muted small"><em>Typing...</em></div> -->
                 </div>
                 <div>
                     <button class="btn btn-primary btn-lg mr-1 px-3">
@@ -129,7 +129,7 @@
 </template>
 <script>
 export default {
-    props: ["messages"],
+    props: ["messages","info"],
     data() {
         return {
             newMessage: "",

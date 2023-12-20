@@ -1,6 +1,6 @@
 <template>
-    <search-form @searching="fetchList" :lists="lists" />
-    <chat-zalo @messagesent="addMessage" :messages="messages" />
+    <search-form @searching="fetchList" :lists="lists" @greeting="handleGreeting"/>
+    <chat-zalo @messagesent="addMessage" :messages="messages" :info="info"/>
 </template>
 
 <script>
@@ -14,10 +14,11 @@ export default {
 
         const inputSearch = ref("");
         const messages = ref([]);
+        const info = ref([]);
         const currentUser = ref(null);
         const user = ref(null);
         const bottomElRef = ref(null);
-        const room_id = 1;
+        var receiver = 1;
         const getCurrentUser = () => {
             axios
                 .get("/getCurrentUser")
@@ -33,7 +34,6 @@ export default {
                 .get("/getList", { params: search })
                 .then((response) => {
                     lists.value = response.data;
-                    //  searchCompleted.value = true;
                 })
                 .catch((error) => {
                     console.error(error);
@@ -41,7 +41,7 @@ export default {
         };
         const fetchMessages = () => {
             axios
-                .get(`/messages/${room_id}`)
+                .get(`/messages/${receiver}`)
                 .then((response) => {
                     const a = response.data.map((item, index) => ({
                         className:
@@ -56,6 +56,12 @@ export default {
                     console.error(error);
                 });
         };
+        const getReceiver = () => {
+            axios.get(`/getReceiver/${receiver}`).then((response) => {
+                console.log(response.data);
+                info.value = response.data;
+            });
+        }
         const addMessage = (message) => {
             axios.post("/messages", message)
                 .then((response) => {
@@ -68,49 +74,50 @@ export default {
                             ? "chat-message-right pb-3"
                             : "chat-message-left pb-3",
                     };
-                    // messages.value.push(newMessage);
+                    messages.value.push(newMessage);
                 })
                 .catch((error) => {
                     console.error(error);
                 });
         };
+        const handleGreeting = (data) => {
+            receiver = data.id;
+            messages.value = "";
+            fetchMessages();
+            getReceiver();
+        }
         onMounted(() => {
             getCurrentUser();
             fetchList();
-            fetchMessages();
-            // Echo.private('private-chat.' + currentUser.value)
-            //     .listen('.MessageSent', (event) => {
-            //         const { message, user, className } = event;
-            //         const newMessage = {
-            //             message: message.message,
-            //             user,
-            //             className:
-            //                 user.id === currentUser.value
-            //                     ? 'chat-message-right pb-3'
-            //                     : 'chat-message-left pb-3',
-            //         };
-            //         if (user.id !== currentUser.value) {
-            //             messages.value.push(newMessage);
-            //         }
-            //     });
-            Echo.private("chat"+ room_id).listen("MessageSent", (e) => {
-                console.log(e);
+            Echo.channel('chat').listen("MessageSent", (e) => {
+               const { message, user, className } = e;
+               const newMessage = {
+                   message: message.message,
+                   user,
+                   className:
+                       user.id == currentUser.value
+                           ? "chat-message-right pb-3"
+                           : "chat-message-left pb-3",
+               };
+               if (user.id != currentUser.value){
+                   messages.value.push(newMessage);
+               }
+            });
+
+            Echo.channel(`chat.greet.${currentUser.value}`)
+            .listen('GreetingSent', (e) => {
                 const { message, user, className } = e;
-                const newMessage = {
+                messages.value.push({
                     message: message.message,
                     user,
-                    className:
-                        user.id == currentUser.value
-                            ? "chat-message-right pb-3"
-                            : "chat-message-left pb-3",
-                };
-                // if (user.id != currentUser.value){
-                    messages.value.push(newMessage);
-                // }
-            });
+                    className: "chat-message-left pb-3"
+                });
+                console.log("Đã nhận");
+            });            
         });
         return {
             messages,
+            info,
             user,
             lists,
             inputSearch,
@@ -119,6 +126,7 @@ export default {
             fetchList,
             addMessage,
             getCurrentUser,
+            handleGreeting,
         };
     },
 };
