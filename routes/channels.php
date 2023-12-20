@@ -4,11 +4,12 @@ use Illuminate\Support\Facades\Broadcast;
 use App\Models\Message;
 
 Broadcast::channel('chat.{roomId}', function (Message $message, $roomId) {
-    return $message->room_id === $roomId;
+    // return $message->room_id === $roomId;
+    return true; 
 });
-// Broadcast::channel('chat', function ($user) {
-//     return Auth::check();
-// });
+Broadcast::channel('chat', function ($user) {
+    return Auth::check();
+});
 
 
 /*

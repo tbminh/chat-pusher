@@ -68,8 +68,7 @@ export default {
                             ? "chat-message-right pb-3"
                             : "chat-message-left pb-3",
                     };
-                    console.log(newMessage);
-                    messages.value.push(newMessage);
+                    // messages.value.push(newMessage);
                 })
                 .catch((error) => {
                     console.error(error);
@@ -95,6 +94,7 @@ export default {
             //         }
             //     });
             Echo.private("chat"+ room_id).listen("MessageSent", (e) => {
+                console.log(e);
                 const { message, user, className } = e;
                 const newMessage = {
                     message: message.message,
@@ -104,9 +104,9 @@ export default {
                             ? "chat-message-right pb-3"
                             : "chat-message-left pb-3",
                 };
-                if (user.id != currentUser.value){
+                // if (user.id != currentUser.value){
                     messages.value.push(newMessage);
-                }
+                // }
             });
         });
         return {
