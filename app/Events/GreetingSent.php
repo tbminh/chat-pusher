@@ -4,26 +4,25 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-//Add the following two models
 use App\Models\User;
-use App\Models\Message;
 
-class MessageSent implements ShouldBroadcast
+class GreetingSent implements ShouldBroadcast
 {
+    use Dispatchable, InteractsWithSockets, SerializesModels;
     public $user;
     public $message;
-    use Dispatchable, InteractsWithSockets, SerializesModels;
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, Message $message)
+    public function __construct(User $user,$message)
     {
-        $this->user = $user;
-        $this->message = $message;
+        $this->user = $user;    
+        $this->message = $message;    
     }
 
     /**
@@ -33,8 +32,6 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        return [
-            'chat'
-        ];
+        return [new Channel("chat.greet.{$this->user->id}")];
     }
 }

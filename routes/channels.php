@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Broadcast;
-use App\Models\Message;
+use App\Models\User;
 
-Broadcast::channel('chat.{roomId}', function (Message $message, $roomId) {
-    return $message->room_id === $roomId;
-});
 Broadcast::channel('chat', function ($user) {
     return Auth::check();
+});
+
+Broadcast::channel('chat.greet.{receiver_id}',function (User $user, $receiver_id){
+    return (int)$user->id === (int) $receiver_id;
 });
 
 

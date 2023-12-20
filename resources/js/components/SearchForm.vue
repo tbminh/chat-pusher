@@ -6,13 +6,13 @@
                 <input type="text" class="form-control my-3" 
                         placeholder="Search..." v-model="inputSearch"
                         @input="fetchList"
-                        searchCompleted = "false" ref="searchInput" >
+                        searchCompleted = "false" ref="searchInput">
             </div>
         </div>
     </div>
     <a href="#" class="list-group-item list-group-item-action border-0" v-for="list in lists" :key="list.id">
         <div class="badge bg-success float-right">5</div>
-        <div class="d-flex align-items-start">
+        <div class="d-flex align-items-start" v-on:click="greetUser(list.id)">
             <img src="./avatar.png" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
             <div class="flex-grow-1 ml-3">
                 <b>{{ list.name }}</b> 
@@ -31,16 +31,21 @@ export default {
   data() {
     return {
       inputSearch: "",
+      id: "",
     };
   },
   methods: {
     fetchList() {
-      // console.log(this.inputSearch);
       this.$emit("searching", {
         search: this.inputSearch
       }
       );
     },
+    greetUser(id){
+      this.$emit("greeting", {
+        id: id
+      });
+    }
   },
 };
 </script>

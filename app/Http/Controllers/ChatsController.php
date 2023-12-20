@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 use App\Events\MessageSent;
+use App\Events\GreetingSent;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Broadcast;
@@ -24,9 +26,20 @@ class ChatsController extends Controller
         return view('chat');
     }
 
-    public function fetchMessages($room_id)
+    public function fetchMessages($receiver)
     {
-        return Message::with('user')->where('room_id',$room_id)->get();
+        $room_id = Message::where(function ($query) use ($receiver){
+            $query->where('user_id', Auth::id())
+                ->where('receiver',$receiver);
+        })
+        ->orWhere(function ($query) use ($receiver){
+            $query->where('user_id',$receiver)
+                ->where('receiver', Auth::id());
+        })
+        ->orderBy('room_id', 'asc')
+        ->first();
+
+        return Message::with('user')->where('room_id',$room_id->room_id)->get();
     }
 
     public function sendMessage(Request $request)
@@ -46,12 +59,22 @@ class ChatsController extends Controller
 
     public function get_list(Request $request){
         $search = $request->input('search');
-        $list = DB::table('users')->where('name', 'like', '%' . $search. '%')->get();
+        $list = DB::table('users')
+                ->where('name', 'like', '%' . $search. '%')
+                ->where('id','!=',Auth::id())
+                ->get();
         return $list;
     }   
     public function get_current_user(){
         $user = Auth::id();
         return ['user'=>$user];
+    }
+
+    public function greetReceived($id){
+        $receiver = User::find($id);
+        $name = Auth::user()->name;
+        broadcast(new GreetingSent($receiver, "{$name} đã chào bạn"))->toOthers();
+        return "Lời chào từ {$name} đến {$receiver->name}";
     }
 }
 
