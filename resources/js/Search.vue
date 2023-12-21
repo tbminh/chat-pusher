@@ -1,5 +1,5 @@
 <template>
-    <search-form @searching="fetchList" :lists="lists" @greeting="handleGreeting"/>
+    <search-form @searching="fetchList" :lists="lists" @openchat="handleChating" @greeting="handleGreeting"/>
     <chat-zalo @messagesent="addMessage" :messages="messages" :info="info"/>
 </template>
 
@@ -63,8 +63,9 @@ export default {
             });
         }
         const addMessage = (message) => {
-            axios.post("/messages", message)
+            axios.post(`/messages/${receiver}`, message)
                 .then((response) => {
+                    console.log(message);
                     const { name } = response.data;
                     const newMessage = {
                         user: { name },
@@ -75,16 +76,26 @@ export default {
                             : "chat-message-left pb-3",
                     };
                     messages.value.push(newMessage);
+                    console.log(message.container)
+                    requestAnimationFrame(() => {
+                        message.container.scrollTop = message.container.scrollHeight;
+                    });
                 })
                 .catch((error) => {
                     console.error(error);
                 });
         };
-        const handleGreeting = (data) => {
-            receiver = data.id;
+        const handleChating = (data) => {
+            receiver = data.id
             messages.value = "";
             fetchMessages();
             getReceiver();
+        }
+        const handleGreeting = (data)=>{
+            axios.post(`/chat/greet/${data.id}`)
+            .then((response)=>{
+                console.log(response.data)
+            })
         }
         onMounted(() => {
             getCurrentUser();
@@ -104,9 +115,9 @@ export default {
                }
             });
 
-            Echo.channel(`chat.greet.${currentUser.value}`)
+            Echo.channel(`chat.greet.${currentUser.value}`) //
             .listen('GreetingSent', (e) => {
-                const { message, user, className } = e;
+                const { message, user } = e;
                 messages.value.push({
                     message: message.message,
                     user,
@@ -126,6 +137,7 @@ export default {
             fetchList,
             addMessage,
             getCurrentUser,
+            handleChating,
             handleGreeting,
         };
     },

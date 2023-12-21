@@ -32,6 +32,6 @@ class GreetingSent implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        return [new Channel("chat.greet.{$this->user->id}")];
+        return [new Channel("chat.greet.{$this->user->id}")]; //
     }
 }

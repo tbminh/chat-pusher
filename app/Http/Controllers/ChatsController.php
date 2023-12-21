@@ -42,12 +42,23 @@ class ChatsController extends Controller
         return Message::with('user')->where('room_id',$room_id->room_id)->get();
     }
 
-    public function sendMessage(Request $request)
+    public function sendMessage(Request $request, $receiver)
     {
+        $room_id = Message::where(function ($query) use ($receiver){
+            $query->where('user_id', Auth::id())
+                ->where('receiver',$receiver);
+        })
+        ->orWhere(function ($query) use ($receiver){
+            $query->where('user_id',$receiver)
+                ->where('receiver', Auth::id());
+        })
+        ->first();
+
         $user = Auth::user();
         $message = $user->messages()->create([
+            'receiver' => $receiver,
             'message' => $request->input('message'),
-            'room_id' => 1
+            'room_id' => $room_id->room_id
         ]);
         broadcast(new MessageSent($user, $message))->toOthers();
         return $user;

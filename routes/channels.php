@@ -7,8 +7,9 @@ Broadcast::channel('chat', function ($user) {
     return Auth::check();
 });
 
-Broadcast::channel('chat.greet.{receiver_id}',function (User $user, $receiver_id){
-    return (int)$user->id === (int) $receiver_id;
+Broadcast::channel('chat.greet.{receiver_id}',function ($user){ //  , $receiver_id
+    return Auth::check();    
+    // return (int)$user->id === (int) $receiver_id;
 });
 
 

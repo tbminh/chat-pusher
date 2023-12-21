@@ -84,7 +84,7 @@
         <div
             class="position-relative"
             style="height: 400px; overflow-x: hidden; overflow-y: auto"
-        >
+            ref="chatContainer">
             <div
                 class="chat-mes sages p-4"
                 v-for="message in messages"
@@ -113,7 +113,7 @@
             </div>
             <div ref="bottomEl"></div>
         </div>
-        <div class="flex-grow-0 py-3 px-4 border-top">
+        <div class="flex-grow-0 py-3 px-4 border-top" v-show="info.name !== undefined">
             <div class="input-group">
                 <input
                     type="text"
@@ -128,6 +128,8 @@
     </div>
 </template>
 <script>
+import {ref} from 'vue';
+const receivedContainer = chatContainer.value;
 export default {
     props: ["messages","info"],
     data() {
@@ -141,14 +143,13 @@ export default {
             this.$emit("messagesent", {
                 user: this.user,
                 message: this.newMessage,
-                // container: this.$refs.bottomEl,
+                container:  receivedContainer,
             });
+            console.log(receivedContainer)
             //Clear the input
             this.newMessage = "";
-            setTimeout(() => {
-                this.$refs.bottomEl?.scrollIntoView({ behavior: "smooth" });
-            }, 1000); 
         },
+        
     },
 };
 </script>

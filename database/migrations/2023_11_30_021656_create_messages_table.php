@@ -16,6 +16,7 @@ return new class extends Migration
             $table->timestamps();
             //insert the lines below
             $table->integer('user_id')->unsigned();
+            $table->integer('receiver')->unsigned();
             $table->text('message');
             $table->integer('room_id');
         });

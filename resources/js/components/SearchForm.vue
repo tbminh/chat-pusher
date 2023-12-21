@@ -12,16 +12,16 @@
     </div>
     <a href="#" class="list-group-item list-group-item-action border-0" v-for="list in lists" :key="list.id">
         <div class="badge bg-success float-right">5</div>
-        <div class="d-flex align-items-start" v-on:click="greetUser(list.id)">
-            <img src="./avatar.png" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
-            <div class="flex-grow-1 ml-3">
+        <div class="d-flex align-items-start" >
+            <img :src="`/images/${list.avatar}`" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
+            <div class="flex-grow-1 ml-3" v-on:click="openChat(list.id)">
                 <b>{{ list.name }}</b> 
                 <div class="small">
                     <span class="fas fa-circle chat-online"></span> Online
                 </div>
             </div>
             <div class="flex-grow-1">
-              <button class="btn btn-primary" @click="greetUser(lists.id)">Greeting </button>
+              <button class="btn btn-primary" v-show="false" @click="greetUser(list.id)">Greeting </button>
             </div>
         </div>
     </a>
@@ -43,6 +43,11 @@ export default {
         search: this.inputSearch
       }
       );
+    },
+    openChat(id){
+      this.$emit("openchat", {
+        id: id
+      });
     },
     greetUser(id){
       this.$emit("greeting", {

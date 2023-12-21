@@ -30,6 +30,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/chat', [App\Http\Controllers\ChatsController::class, 'index']);
 Route::get('/messages/{receiver}', [App\Http\Controllers\ChatsController::class, 'fetchMessages']);
-Route::post('/messages', [App\Http\Controllers\ChatsController::class, 'sendMessage']);
+Route::post('/messages/{receiver}', [App\Http\Controllers\ChatsController::class, 'sendMessage']);
 Route::post('/chat/greet/{id}', [App\Http\Controllers\ChatsController::class, 'greetReceived'])->name('chat.greet');
 
