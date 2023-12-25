@@ -1,7 +1,7 @@
 <template>
     <div class="col-12 col-lg-7 col-xl-9">
         <div class="py-2 px-4 border-bottom d-none d-lg-block">
-            <div class="d-flex align-items-center py-1">
+            <div class="d-flex align-items-center py-1"> 
                 <div class="position-relative" v-show="info.name !== undefined">
                     <img
                         :src="`/images/${info.avatar}`"
@@ -16,7 +16,7 @@
                     <!-- <div class="text-muted small"><em>Typing...</em></div> -->
                 </div>
                 <div>
-                    <button class="btn btn-primary btn-lg mr-1 px-3">
+                    <button class="btn btn-primary btn-lg mr-1 px-3" @click="scrollToBottom">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -81,10 +81,9 @@
                 </div>
             </div>
         </div>
-        <div
-            class="position-relative"
+        <div class="position-relative"
             style="height: 400px; overflow-x: hidden; overflow-y: auto"
-            ref="chatContainer">
+            ref="chatContainerRef">
             <div
                 class="chat-mes sages p-4"
                 v-for="message in messages"
@@ -111,45 +110,52 @@
                     </div>
                 </div>
             </div>
-            <div ref="bottomEl"></div>
         </div>
-        <div class="flex-grow-0 py-3 px-4 border-top" v-show="info.name !== undefined">
+        <div
+            class="flex-grow-0 py-3 px-4 border-top"
+            v-show="info.name !== undefined"
+        >
             <div class="input-group">
                 <input
                     type="text"
                     class="form-control"
                     placeholder="Type your message"
                     v-model="newMessage"
-                    @keyup.enter="sendMessage"
-                />
+                    @keyup.enter="sendMessage"/>
                 <button class="btn btn-primary">Send</button>
             </div>
         </div>
     </div>
 </template>
-<script>
-import {ref} from 'vue';
-const receivedContainer = chatContainer.value;
-export default {
-    props: ["messages","info"],
-    data() {
-        return {
-            newMessage: "",
-        };
-    },
-    methods: {
-        sendMessage() {
-            //Emit a "messagesent" event including the user who sent the message along with the message content
-            this.$emit("messagesent", {
-                user: this.user,
-                message: this.newMessage,
-                container:  receivedContainer,
-            });
-            console.log(receivedContainer)
-            //Clear the input
-            this.newMessage = "";
-        },
-        
-    },
-};
+
+<script setup>
+    import { ref, onMounted, watch, nextTick } from "vue";
+    const newMessage = ref("");
+    const chatContainerRef = ref(null);
+    const emit = defineEmits(['messagesent']);
+    const props = defineProps({messages:Object, info:Object})
+    const sendMessage = () => {
+        const data = {
+            user: '',
+            message: newMessage.value,
+            container: chatContainerRef.value 
+        }
+        emit('messagesent',data);
+        // Clear the input
+        newMessage.value = "";
+    };
+    const scrollToBottom = () => {
+        if (chatContainerRef.value) {
+            chatContainerRef.value.scrollTop = chatContainerRef.value.scrollHeight;
+        }
+    };
+    onMounted(() => {
+        scrollToBottom();
+    });
+
+    watch(() => props.messages, () => {
+        nextTick(() => {
+            scrollToBottom();
+        });
+    })
 </script>

@@ -17,6 +17,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/logout',function(){
+    Auth::logout();
+    return redirect('/login');
+});
+
 Auth::routes();
 
 Route::get('/chat-zalo', [App\Http\Controllers\ChatsController::class, 'chat_zalo']);

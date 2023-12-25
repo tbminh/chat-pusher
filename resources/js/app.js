@@ -23,12 +23,13 @@ const options = {
     authorizer: (channel) => {
         return {
             authorize: (socketId, callback) => {
+                
                 axios.post('/api/broadcasting/auth', {
                     socket_id: socketId,
                     channel_name: channel.name
                 })
                 .then(response => {
-                    callback(false, response.data);
+                    callback(false, response);
                 })
                 .catch(error => {
                     callback(true, error);

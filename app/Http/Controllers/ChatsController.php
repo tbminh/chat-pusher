@@ -39,11 +39,15 @@ class ChatsController extends Controller
         ->orderBy('room_id', 'asc')
         ->first();
 
-        return Message::with('user')->where('room_id',$room_id->room_id)->get();
+        return Message::with('user')
+        ->where('room_id', $room_id->room_id)
+        ->orderBy('id', 'desc') 
+        ->take(6) 
+        ->get()
+        ->reverse()->values();
     }
 
-    public function sendMessage(Request $request, $receiver)
-    {
+    public function sendMessage(Request $request, $receiver){
         $room_id = Message::where(function ($query) use ($receiver){
             $query->where('user_id', Auth::id())
                 ->where('receiver',$receiver);
@@ -63,6 +67,7 @@ class ChatsController extends Controller
         broadcast(new MessageSent($user, $message))->toOthers();
         return $user;
     }
+
     public function chat_zalo(){
         $get_users = DB::table('users')->get();
         return view('chat-form',['get_users'=>$get_users]);
@@ -93,6 +98,20 @@ class ChatsController extends Controller
         $name = Auth::user()->name;
         broadcast(new GreetingSent($receiver, "{$name} đã chào bạn"))->toOthers();
         return "Lời chào từ {$name} đến {$receiver->name}";
+    }
+
+    public function authenticate(Request $request)
+    {
+        $socketId = $request->socket_id;
+        $channelName = $request->channel_name;
+        
+        // Your authentication logic here
+        // For example, check user's authentication, authorization for the channel
+        
+        // Return a response to allow or deny access
+        return response()->json([
+            'allow_access' => true, // or false based on your logic
+        ]);
     }
 }
 

@@ -28,10 +28,16 @@ class GreetingSent implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     *
      */
-    public function broadcastOn(): array
+    // @return array<int, \Illuminate\Broadcasting\Channel>
+    public function broadcastOn()//: array
     {
-        return [new Channel("chat.greet.{$this->user->id}")]; //
+        return new PrivateChannel("chat.greet.1"); //{$this->user->id}
+        // return ['chat.greet']; //.{$this->user->id}
     }
+    // public function broadCastAs()
+    // {
+    //     return 'chat.greet';
+    // }
 }
