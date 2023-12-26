@@ -55,12 +55,11 @@
     const props = defineProps(["lists"]);
     const emit  = defineEmits(["searching", "openchat", "greeting"]);
 
-    let inputSearch = "";
-    let id = "";
+    const inputSearch = ref('');
 
     const fetchList = () => {
         emit("searching", {
-            search: inputSearch,
+            search: inputSearch.value,
         });
     };
 

@@ -38,7 +38,9 @@ class ChatsController extends Controller
         })
         ->orderBy('room_id', 'asc')
         ->first();
-
+        if ($room_id == null) {
+            return [""];
+        }
         return Message::with('user')
         ->where('room_id', $room_id->room_id)
         ->orderBy('id', 'desc') 
@@ -48,7 +50,7 @@ class ChatsController extends Controller
     }
 
     public function sendMessage(Request $request, $receiver){
-        $room_id = Message::where(function ($query) use ($receiver){
+        $message = Message::select('room_id')->where(function ($query) use ($receiver){
             $query->where('user_id', Auth::id())
                 ->where('receiver',$receiver);
         })
@@ -57,15 +59,22 @@ class ChatsController extends Controller
                 ->where('receiver', Auth::id());
         })
         ->first();
-
         $user = Auth::user();
-        $message = $user->messages()->create([
-            'receiver' => $receiver,
-            'message' => $request->input('message'),
-            'room_id' => $room_id->room_id
-        ]);
-        broadcast(new MessageSent($user, $message))->toOthers();
-        return $user;
+
+        if ($message == null) {
+            $room_id = Message::select('room_id') + 1;
+        }
+        else{
+            $room_id = $message->room_id;
+        }
+        // $message = $user->messages()->create([
+        //     'receiver' => $receiver,
+        //     'message' => $request->input('message'),
+        //     'room_id' => $room_id
+        // ]);
+        
+        // broadcast(new MessageSent($user, $message))->toOthers();
+        return $room_id;
     }
 
     public function chat_zalo(){

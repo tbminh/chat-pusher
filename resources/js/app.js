@@ -1,4 +1,5 @@
-import {createApp} from 'vue'
+import {createApp} from 'vue';
+// import './bootstrap';
 import ChatMessages from './components/ChatMessages.vue';
 import ChatForm from './components/ChatForm.vue';
 import App from './App.vue'
@@ -8,6 +9,7 @@ import ChatZalo from './components/ChatZalo.vue'
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 import axios from "axios";
+
 
 // const app = createApp(Search)
 // app.component('search-form',SearchForm);
@@ -20,16 +22,15 @@ const options = {
     broadcaster: 'pusher',
     key: 'f13576f65e4a23fc3d2b',
     cluster: 'ap1',
-    authorizer: (channel) => {
+    authorizer: (channel, options) => {
         return {
             authorize: (socketId, callback) => {
-                
                 axios.post('/api/broadcasting/auth', {
                     socket_id: socketId,
                     channel_name: channel.name
                 })
                 .then(response => {
-                    callback(false, response);
+                    callback(false, response.data);
                 })
                 .catch(error => {
                     callback(true, error);

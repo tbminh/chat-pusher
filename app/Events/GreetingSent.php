@@ -33,7 +33,7 @@ class GreetingSent implements ShouldBroadcast
     // @return array<int, \Illuminate\Broadcasting\Channel>
     public function broadcastOn()//: array
     {
-        return new PrivateChannel("chat.greet.1"); //{$this->user->id}
+        return new Channel("chat.greet.{$this->user->id}"); //
         // return ['chat.greet']; //.{$this->user->id}
     }
     // public function broadCastAs()

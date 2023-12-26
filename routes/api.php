@@ -20,14 +20,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('/broadcasting/auth', function (Request $request) {
-    // Xử lý logic xác thực ở đây
-    // Lấy thông tin socket_id và channel_name từ $request
+    $socketId = $request->input('socket_id');
+    $channelName = $request->input('channel_name');
+
+    // Perform authentication logic here based on $socketId, $channelName
+    // Example: Check if the user is authenticated
+   
+    return response()->json(['authorized' => true]);
     
-    // Ví dụ: trả về kết quả xác thực dựa trên người dùng hiện tại
-    if (Auth::check()) {
-        return response()->json(['authorized' => true]);
-    } else {
-        return response()->json(['authorized' => false]);
-    }
 });
 // Route::post('/broadcasting/auth', [ChatsController::class, 'authenticate']);

@@ -16,15 +16,16 @@ const lists = ref([]); // Khai báo biến lists sử dụng ref
 const inputSearch = ref("");
 const messages = ref([]);
 const info = ref([]);
-const currentUser = ref(null);
-const user = ref(null);
+const currentUser = ref('');
+const user = ref('');
 var receiver = 1;
 
-const getCurrentUser = () => {
-    axios
+const getCurrentUser = async () => {
+    await axios
         .get("/getCurrentUser")
         .then((response) => {
             currentUser.value = response.data.user;
+            return response.data.user;
         })
         .catch((error) => {
             console.error(error);
@@ -44,14 +45,15 @@ const fetchMessages = () => {
     axios
         .get(`/messages/${receiver}`)
         .then((response) => {
-            const a = response.data.map((item, index) => ({
-                className:
-                    item.user.id == currentUser.value
-                        ? "chat-message-right pb-3"
-                        : "chat-message-left pb-3",
-                ...item,
-            }));
-            messages.value = a;
+            console.log(response.data)
+            // const a = response.data.map((item, index) => ({
+            //     className:
+            //         item.user.id == currentUser.value
+            //             ? "chat-message-right pb-3"
+            //             : "chat-message-left pb-3",
+            //     ...item,
+            // }));
+            // messages.value = a;
         })
         .catch((error) => {
             console.error(error);
@@ -66,19 +68,20 @@ const addMessage = (message) => {
     axios
         .post(`/messages/${receiver}`, message)
         .then((response) => {
-            const { name } = response.data;
-            const newMessage = {
-                user: { name },
-                message: message.message,
-                className:
-                    response.data.id == currentUser.value
-                        ? "chat-message-right pb-3"
-                        : "chat-message-left pb-3",
-            };
-            messages.value.push(newMessage);
-            requestAnimationFrame(() => {
-                message.container.scrollTop = message.container.scrollHeight;
-            });
+            console.log(response.data)
+            // const { name } = response.data;
+            // const newMessage = {
+            //     user: { name },
+            //     message: message.message,
+            //     className:
+            //         response.data.id == currentUser.value
+            //             ? "chat-message-right pb-3"
+            //             : "chat-message-left pb-3",
+            // };
+            // messages.value.push(newMessage);
+            // requestAnimationFrame(() => {
+            //     message.container.scrollTop = message.container.scrollHeight;
+            // });
         })
         .catch((error) => {
             console.error(error);
@@ -96,8 +99,8 @@ const handleGreeting = (data) => {
     });
 };
 
-onMounted(() => {
-    getCurrentUser();
+onMounted(async () => {
+    await getCurrentUser();
     fetchList();
     Echo.channel("chat").listen("MessageSent", (e) => {
         const { message, user, className } = e;
@@ -109,22 +112,18 @@ onMounted(() => {
                     ? "chat-message-right pb-3"
                     : "chat-message-left pb-3",
         };
+        
         if (user.id != currentUser.value) {
+            console.log(currentUser.value)
             messages.value.push(newMessage);
         }
     });
-
-    try{
-
-        Echo.private(`chat.greet.1}`).listen(
-            "GreetingSent", (e) => {
-                // Xử lý các sự kiện nhận được
-                console.log("Đã nhận");
-            }
-        );
-    }
-    catch(e){
-        console.log(e)
+    if (currentUser.value) {
+        console.log(currentUser.value)
+        Echo.channel(`chat.greet.${currentUser.value}`).listen("GreetingSent",(e) => {
+            // Xử lý các sự kiện nhận được
+            console.log("Đã nhận");
+        });
     }
 });
 </script>
